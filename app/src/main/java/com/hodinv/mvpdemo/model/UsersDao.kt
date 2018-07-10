@@ -9,7 +9,7 @@ import android.arch.persistence.room.Update
 @Dao
 interface UsersDao {
     @Query("SELECT * FROM user")
-    fun getAll(): LiveData<List<User>>
+    fun getAll(): List<User>
 
     @Insert
     fun addNew(user: User)

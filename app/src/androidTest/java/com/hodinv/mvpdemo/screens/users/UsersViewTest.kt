@@ -1,26 +1,21 @@
 package com.hodinv.mvpdemo.screens.users
 
 
-import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.action.ViewActions.swipeRight
-import android.support.test.espresso.matcher.ViewMatchers.*
+import android.support.test.espresso.action.ViewActions.*
+import android.support.test.espresso.assertion.ViewAssertions.doesNotExist
 import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.contrib.RecyclerViewActions
+import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.filters.LargeTest
-import android.support.test.runner.AndroidJUnit4
-import org.junit.Assert.assertEquals
-import org.junit.Test
-import org.junit.runner.RunWith
 import android.support.test.rule.ActivityTestRule
-import android.support.v7.widget.RecyclerView
-import android.widget.TextView
+import android.support.test.runner.AndroidJUnit4
 import com.hodinv.mvpdemo.R
 import com.hodinv.mvpdemo.model.User
 import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.not
-import org.junit.Assert
 import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito
 
 
@@ -69,27 +64,37 @@ class UsersViewTest {
     @Test
     fun testUsersAreVisible() {
         mActivityRule.activity.setUsers(list1)
-        for (pos in 0..list1.size) {
-            onView(allOf(withId(R.id.name), withText(list1[pos].name))).check(matches(isDisplayed()))
+        onView(withId(R.id.list)).check(matches(isDisplayed()));
+        Thread.sleep(5000)
+        for (pos in 0..list1.size - 1) {
+            onView(withText(list1[pos].name)).check(matches(isDisplayed()));
         }
     }
 
     @Test
     fun testUsersChanged() {
         mActivityRule.activity.setUsers(list1)
+        onView(withId(R.id.list)).check(matches(isDisplayed()));
+        Thread.sleep(5000)
         mActivityRule.activity.setUsers(list2)
-        for (pos in 0..list2.size) {
-            onView(allOf(withId(R.id.name), withText(list2[pos].name))).check(matches(isDisplayed()))
+        onView(withId(R.id.list)).check(matches(isDisplayed()));
+        Thread.sleep(5000)
+        for (pos in 0..list2.size - 1) {
+            onView(withText(list2[pos].name)).check(matches(isDisplayed()));
         }
         mActivityRule.activity.setUsers(list3)
-        for (pos in 0..list2.size) {
-            onView(allOf(withId(R.id.name), withText(list2[pos].name))).check(matches(not(isDisplayed())))
+        onView(withId(R.id.list)).check(matches(isDisplayed()));
+        Thread.sleep(5000)
+        for (pos in 0..list2.size - 1) {
+            onView(withText(list2[pos].name)).check(doesNotExist());
         }
     }
 
     @Test
     fun testUsersClickGoesToDetail() {
         mActivityRule.activity.setUsers(list1)
+        onView(withId(R.id.list)).check(matches(isDisplayed()));
+        Thread.sleep(5000)
         onView(allOf(withId(R.id.name), withText(list1[0].name))).check(matches(isDisplayed()))
         onView(allOf(withId(R.id.name), withText(list1[0].name))).perform(click())
         Mockito.verify(presenter)?.openUserDetail(list1[0])
@@ -98,7 +103,10 @@ class UsersViewTest {
     @Test
     fun testSwipeRemovesUser() {
         mActivityRule.activity.setUsers(list1)
-        onView(allOf(withId(R.id.name), withText(list1[0].name))).perform(swipeRight())
+        onView(withId(R.id.list)).check(matches(isDisplayed()));
+        Thread.sleep(5000)
+        onView(withId(R.id.list))
+                .perform(RecyclerViewActions.actionOnItemAtPosition<UserViewHolder>(0, swipeLeft()));
         Mockito.verify(presenter)?.deleteUser(list1[0])
     }
 
