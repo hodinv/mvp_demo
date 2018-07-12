@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">MvpDemo</string>
+    <string name="field_name">Name</string>
+    <string name="field_email">Email</string>
+    <string name="field_phone">Phone</string>
+    <string name="field_grade">Grade</string>
+    <string name="error_required_name">Name can\'t be empty</string>
+    <string name="error_required_email">Email can\'t be empty</string>
+    <string name="error_required_phone">Phone can\'t be empty</string>
+    <string name="error_required_grade">You need to select grade</string>
+    <string name="error_wrong_email">You should enter valid email</string>
 </resources>

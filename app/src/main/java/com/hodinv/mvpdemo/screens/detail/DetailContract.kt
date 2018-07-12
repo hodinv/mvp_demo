@@ -7,14 +7,20 @@ import com.hodinv.mvpdemo.mvp.MvpView
 
 interface DetailContract {
     interface View: MvpView {
+        enum class Fields {
+            Name, Email, Phone, Grade
+        }
+
+        enum class ErrorType {
+            Empty, Invalid
+        }
+
         fun setName(name: String)
         fun setEmail(email: String)
         fun setPhone(phone: String)
         fun setGrade(grade: Char)
-        fun setNameError(invalid: Boolean, message: String = "")
-        fun setEmailError(invalid: Boolean, message: String = "")
-        fun setPhoneError(invalid: Boolean, message: String = "")
-        fun setGradePError(invalid: Boolean, message: String = "")
+        fun setError(field: Fields, error: ErrorType)
+        fun clearError(field: Fields)
     }
     interface Router: MvpRouter {
         fun goBack()

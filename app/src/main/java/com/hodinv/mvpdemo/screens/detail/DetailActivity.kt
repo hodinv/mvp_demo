@@ -3,54 +3,88 @@ package com.hodinv.mvpdemo.screens.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.hodinv.mvpdemo.R
 import com.hodinv.mvpdemo.model.Repository
 import com.hodinv.mvpdemo.model.User
 import com.hodinv.mvpdemo.mvp.BaseMvpActivity
+import kotlinx.android.synthetic.main.activity_detail.*
 
 class DetailActivity : BaseMvpActivity<DetailContract.View, DetailContract.Router, DetailContract.Presenter>(), DetailContract.View, DetailContract.Router {
+
+    override fun setError(field: DetailContract.View.Fields, error: DetailContract.View.ErrorType) {
+        if (error == DetailContract.View.ErrorType.Empty) {
+            when (field) {
+                DetailContract.View.Fields.Name -> {
+                    errorName.visibility = View.VISIBLE
+                    errorName.setText(R.string.error_required_name)
+                }
+                DetailContract.View.Fields.Email -> {
+                    errorEmail.visibility = View.VISIBLE
+                    errorEmail.setText(R.string.error_required_email)
+                }
+                DetailContract.View.Fields.Phone -> {
+                    errorPhone.visibility = View.VISIBLE
+                    errorPhone.setText(R.string.error_required_phone)
+                }
+                DetailContract.View.Fields.Grade -> {
+                    errorGrade.visibility = View.VISIBLE
+                    errorGrade.setText(R.string.error_required_grade)
+                }
+            }
+        }
+        if (error == DetailContract.View.ErrorType.Invalid) {
+            when (field) {
+                DetailContract.View.Fields.Email -> {
+                    errorEmail.visibility = View.VISIBLE
+                    errorEmail.setText(R.string.error_wrong_email)
+                }
+            }
+        }
+    }
+
+    override fun clearError(field: DetailContract.View.Fields) {
+        when (field) {
+            DetailContract.View.Fields.Name -> errorName.visibility = View.INVISIBLE
+            DetailContract.View.Fields.Email -> errorEmail.visibility = View.INVISIBLE
+            DetailContract.View.Fields.Phone -> errorPhone.visibility = View.INVISIBLE
+            DetailContract.View.Fields.Grade -> errorGrade.visibility = View.INVISIBLE
+        }
+    }
+
     override fun goBack() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        onBackPressed()
     }
 
-    override fun setName(name: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setName(nameValue: String) {
+        name.setText(nameValue)
     }
 
-    override fun setEmail(email: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setEmail(emailValue: String) {
+        email.setText(emailValue)
     }
 
-    override fun setPhone(phone: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setPhone(phoneValue: String) {
+        phone.setText(phoneValue)
     }
 
-    override fun setGrade(grade: Char) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setGrade(gradeValue: Char) {
+        when (gradeValue) {
+            'A' -> grade.check(R.id.gradeA)
+            'B' -> grade.check(R.id.gradeB)
+            'C' -> grade.check(R.id.gradeC)
+            'D' -> grade.check(R.id.gradeD)
+            'E' -> grade.check(R.id.gradeE)
+        }
     }
 
-    override fun setNameError(invalid: Boolean, message: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun setEmailError(invalid: Boolean, message: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun setPhoneError(invalid: Boolean, message: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun setGradePError(invalid: Boolean, message: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override fun createPresenter(): DetailContract.Presenter {
         val id = intent.extras.getInt(EXTRA_USER_ID)
         return DetailPresenter(
                 if (id != NEW_USER) id else null,
                 Repository.instance.usersDao()
-             )
+        )
     }
 
     override fun getMvpView(): DetailContract.View {
@@ -64,6 +98,19 @@ class DetailActivity : BaseMvpActivity<DetailContract.View, DetailContract.Route
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
+        commit.setOnClickListener {
+            presenter?.setName(name.text.toString())
+            presenter?.setEmail(email.text.toString())
+            presenter?.setPhone(phone.text.toString())
+            presenter?.save()
+        }
+
+        gradeA.setOnClickListener { presenter?.setGrade('A') }
+        gradeB.setOnClickListener { presenter?.setGrade('B') }
+        gradeC.setOnClickListener { presenter?.setGrade('C') }
+        gradeD.setOnClickListener { presenter?.setGrade('D') }
+        gradeE.setOnClickListener { presenter?.setGrade('E') }
+
     }
 
     companion object {
